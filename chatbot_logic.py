@@ -1,12 +1,8 @@
 import google.generativeai as genai
 import os
 
-try:
-    if not os.getenv("GOOGLE_API_KEY"):
-        raise ValueError("A chave de API do Google Generative AI não está definida.")
-    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-except Exception as e:
-    print(f"Erro ao configurar o Gemini API: {e}. Certifique-se de definir a variável de ambiente GOOGLE_API_KEY.")
+from dotenv import load_dotenv
+load_dotenv()
 
 def generate_response_with_gemini(query: str, context_chunks: list[str]) -> str:
     """
@@ -15,8 +11,14 @@ def generate_response_with_gemini(query: str, context_chunks: list[str]) -> str:
     :param context_chuncks: Lista de fragmentos de contexto que fornecem informações adicionais para a resposta.
     :return: Resposta gerada pelo modelo Gemini.
     """
-    if not os.getenv("GOOGLE_API_KEY"):
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
         raise ValueError("Erro: A chave de API do Gemini não está definida. Por favor, defina a variável de ambiente GOOGLE_API_KEY.")
+    
+    try:
+        genai.configure(api_key=api_key)
+    except Exception as e:
+        raise ValueError(f"Erro ao configurar a chave de API do Gemini: {e}")
     
     # Prepara o contexto para a consulta
     context_str = "\n\n---\n\n".join(context_chunks)

@@ -9,7 +9,7 @@ from chatbot_logic import generate_response_with_gemini
 
 
 # --- Configuração ---
-ANEEL_REN_PATH = r"./data/ren2021100.html"
+ANEEL_REN_PATH = r"./data/ren20211000.html"
 CHROMA_PERSIST_DIR = r"./chroma_db_data"
 DB_READY_FLAG = "db_initialized.flag" # Arquivo de flag para verificar se o banco de dados foi inicializado
 
@@ -40,9 +40,9 @@ def ensure_db_is_ready():
             import vector_db
             vector_db.client = client # Atualiza o client global
             vector_db.collection = collection # Atualiza a coleção global
-            st.sidebar(f"Base de dados vetorial '{COLLECTION_NAME}' carregada com sucesso! ✅")
+            st.sidebar.success(f"Base de dados vetorial '{COLLECTION_NAME}' carregada com sucesso! ✅")
         except Exception as e:
-            st.sidebar(f"Erro ao carregar a base de dados vetorial: {e}. Tentando recriar...")
+            st.sidebar.error(f"Erro ao carregar a base de dados vetorial: {e}. Tentando recriar...")
             if os.path.exists(DB_READY_FLAG):
                 os.remove(DB_READY_FLAG) # Remove a flag para forçar a reinicialização
             ensure_db_is_ready()
@@ -83,11 +83,11 @@ if api_key:
     except Exception as e:
         st.sidebar.error(f"Erro ao configurar a chave de API do Gemini: {e}.")
 else:
-    st.sidebar.warning("Por favor, forneça sua chave de API do Gemini para continuar.")
+    st.sidebar.warning(f"Por favor, forneça sua chave de API do Gemini para continuar. {api_key}")
     st.stop()
 
 # Verifica se o banco de dados vetorial está pronto antes de permitir consultas
-# ensure_db_is_ready()
+ensure_db_is_ready()
 
 # Inicializa o histórico de mensagens
 if "messages" not in st.session_state:
@@ -107,4 +107,26 @@ if prompt := st.chat_input("Qual a sua pergunta sobre a REN 1000/2021 da ANEEL?"
     with st.chat_message("user"):
         st.markdown(prompt)
     
+    # Mostra a resposta da IA em um container de mensagem
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        message_placeholder.markdown("**Pensando...** 🧠")
+
+        # 1. Consulta o banco de dados vetorial
+        retrieved_chunks = query_vector_db(prompt, n_results=3)
+        
+        if not retrieved_chunks:
+            full_response = "Desculpe, não consegui encontrar informações relevantes nos documentos consultados para responder à sua pergunta."
+        else:
+            # 2. Gera a resposta usando o modelo Gemini
+            full_response = generate_response_with_gemini(prompt, retrieved_chunks)
+
+        # Atualiza a mensagem com a resposta final
+        message_placeholder.markdown(full_response)
+        with st.expander("Ver fontes"):
+            for doc in retrieved_chunks:
+                st.caption(f"Fonte: {doc};")  # Exibe os primeiros 100 caracteres de cada documento recuperado
+    
+    # Adiciona a resposta ao histórico
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
     

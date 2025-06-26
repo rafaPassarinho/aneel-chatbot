@@ -1,0 +1,10 @@
+# Core dependencies
+streamlit>=1.28.0
+google-generativeai>=0.3.0
+chromadb>=0.4.0
+langchain>=0.1.0
+beautifulsoup4>=4.12.0
+python-dotenv>=1.0.0
+
+# Optional dependencies for better performance
+sentence-transformers>=2.2.0

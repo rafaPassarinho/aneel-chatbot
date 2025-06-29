@@ -1,124 +1,162 @@
-# 💬 ANEEL Chatbot - Resolução Normativa 1000/2021
+# Chatbot Inteligente ANEEL - Resolução Normativa 1000/2021
 
-Chatbot inteligente especializado em responder perguntas sobre a Resolução Normativa ANEEL nº 1000/2021. Este projeto utiliza técnicas de RAG (Retrieval-Augmented Generation) com Google Gemini AI para fornecer respostas precisas baseadas no documento oficial.
+Repositório de código referente ao **Projeto Final de Curso** da Especialização _lato sensu_ em Processamento de Linguagem Natural (NLP) do **AKCIT** - Centro de Competência EMBRAPII em Tecnologias Imersivas (_Advanced Knowledge Center for Immersive Technologies_).
 
-**Projeto Final de Curso - Especialização em NLP da AKCIT**
+Este projeto implementa um chatbot inteligente especializado em responder perguntas sobre a Resolução Normativa ANEEL nº 1000/2021, utilizando técnicas de RAG (Retrieval-Augmented Generation) com Google Gemini AI.
 
-## 🚀 Funcionalidades
+## Recomendação
 
-- ✅ Interface web intuitiva com Streamlit
-- ✅ Processamento de documentos HTML da ANEEL
-- ✅ Busca semântica com ChromaDB
-- ✅ Respostas contextualizadas com Google Gemini AI
-- ✅ Configuração flexível de API key
-- ✅ Cache inteligente do banco de dados vetorial
+É altamente recomendado que você tenha conhecimento básico em Python, Streamlit e conceitos de RAG antes de executar este projeto.
 
-## 📁 Estrutura do Projeto
+## Como executar?
 
-```
-aneel-chatbot/
-├── app.py                    # Interface principal Streamlit
-├── chatbot_logic.py         # Lógica do chatbot com Gemini AI
-├── data_preprocess.py       # Processamento de documentos HTML
-├── text_processor.py        # Divisão de texto em chunks
-├── vector_db.py            # Gerenciamento do banco vetorial
-├── requirements.txt        # Dependências do projeto
-├── .env                    # Variáveis de ambiente (não commitado)
-├── README.md              # Este arquivo
-├── data/
-│   ├── ren20211000.html   # Documento da REN 1000/2021
-│   └── cleaned_text.txt   # Texto limpo (gerado automaticamente)
-├── chroma_db_data/        # Banco de dados vetorial (gerado automaticamente)
-└── notebooks/
-    └── teste.ipynb        # Notebooks de desenvolvimento
-```
+Acompanhe o seguinte passo a passo para configurar e executar o chatbot ANEEL.
 
-## ⚙️ Pré-requisitos
+1. **Baixe o código** disponível aqui, nesse repositório, clicando no botão **Code** e depois em **Download ZIP**.
 
-- Python 3.8 ou superior
-- Chave de API do Google Gemini ([obter aqui](https://aistudio.google.com/app/apikey))
+2. **Extraia o arquivo** baixado para uma pasta de sua escolha.
 
-## 🛠️ Instalação
+3. **Verifique a estrutura** da pasta extraída. Ela deve possuir a seguinte organização:
+   ```
+   aneel-chatbot/
+   ├── app.py                    # Interface principal Streamlit
+   ├── chatbot_logic.py         # Lógica do chatbot com Gemini AI
+   ├── text_processor.py      # Processamento de PDF com hierarquia
+   ├── vector_db.py            # Gerenciamento do banco vetorial
+   ├── requirements.txt        # Dependências do projeto
+   ├── .env.example            # Exemplo de arquivo de ambiente
+   ├── README.md              # Este arquivo
+   ├── data/
+   │   └── atren20211000.pdf   # Documento da REN 1000/2021 (baixado automaticamente)
+   ├── chroma_db_data/        # Banco de dados vetorial (criado automaticamente)
+   └── notebooks/
+       └── teste.ipynb        # Notebooks de desenvolvimento
+   ```
 
-### 1. Clone o repositório
-```bash
-git clone <repository-url>
-cd aneel-chatbot
-```
+4. **Obtenha sua chave de API do Google Gemini**:
+   - Acesse [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - Crie uma conta ou faça login
+   - Gere uma nova chave de API
+   - Guarde essa chave em local seguro
 
-### 2. Crie um ambiente virtual (recomendado)
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
+---
 
-# Linux/Mac
-python -m venv venv
-source venv/bin/activate
-```
+> ❗ **Importante**: Você precisará de uma chave de API válida do Google Gemini para usar este chatbot. Sem ela, o sistema não funcionará.
 
-### 3. Instale as dependências
-```bash
-pip install -r requirements.txt
-```
+---
 
-### 4. Configure a chave de API do Gemini
+> ❗ **Antes de prosseguir**: Certifique-se de ter o **Anaconda** instalado em seu sistema. Se não tiver, baixe e instale através do [site oficial do Anaconda](https://www.anaconda.com/products/distribution).
 
-**Opção A: Arquivo .env (recomendado)**
-```bash
-# Crie um arquivo .env na raiz do projeto
-echo GOOGLE_API_KEY=sua_chave_api_aqui > .env
-```
+---
 
-**Opção B: Via interface web**
-- Execute o projeto e insira a chave diretamente na sidebar
+5. **Configure o ambiente Anaconda**:
 
-## 🏃‍♂️ Como Executar
+   **Windows:**
+   ```bash
+   # Abra o Anaconda Powershell Prompt (não o CMD comum)
+   cd caminho\para\aneel-chatbot
+   conda create --name aneel-chatbot python=3.9
+   conda activate aneel-chatbot
+   ```
 
-```bash
-streamlit run app.py
-```
+   **Linux/Mac:**
+   ```bash
+   # Abra o terminal
+   cd caminho/para/aneel-chatbot
+   conda create --name aneel-chatbot python=3.9
+   conda activate aneel-chatbot
+   ```
 
-O aplicativo será aberto automaticamente no seu navegador em `http://localhost:8501`
+6. **Instale as dependências**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   
+   > 💡 **Dica**: Se preferir usar apenas conda, você pode instalar as principais dependências com:
+   > ```bash
+   > conda install streamlit
+   > pip install -r requirements.txt  # Para dependências específicas não disponíveis no conda
+   > ```
 
-## 📖 Como Usar
+7. **Configure suas variáveis de ambiente**:
+   - Copie o arquivo `.env.example` e renomeie para `.env`
+   - Edite o arquivo `.env` e substitua `sua_chave_api_aqui` pela sua chave real do Google Gemini:
+   
+   ```
+   GOOGLE_API_KEY=sua_chave_api_aqui
+   ```
 
-1. **Configure a API Key**: Insira sua chave do Google Gemini na sidebar ou configure no arquivo `.env`
-2. **Aguarde a inicialização**: Na primeira execução, o sistema processará o documento da ANEEL (pode levar alguns minutos)
-3. **Faça suas perguntas**: Digite perguntas sobre a REN 1000/2021 no chat
-4. **Receba respostas contextualizadas**: O chatbot responderá baseado no documento oficial
+8. **Execute o aplicativo**:
+   ```bash
+   # Certifique-se de que o ambiente está ativo
+   conda activate aneel-chatbot
+   streamlit run app.py
+   ```
 
-## 🗂️ Dados
+9. **Acesse o chatbot**:
+   - O aplicativo será aberto automaticamente no seu navegador
+   - Caso não abra, acesse: `http://localhost:8501`
 
-O projeto utiliza o arquivo `data/ren20211000.html` que contém a Resolução Normativa ANEEL nº 1000/2021. O sistema automaticamente:
+10. **Primeira execução**:
+    - Na primeira vez, o sistema baixará automaticamente o PDF da ANEEL
+    - O processamento do documento pode levar alguns minutos
+    - Aguarde até que apareça a mensagem "Base de dados vetorial inicializada com sucesso!"
 
-1. Processa e limpa o HTML
-2. Divide o texto em chunks menores
-3. Cria embeddings e armazena no ChromaDB
-4. Gera um arquivo de flag para evitar reprocessamento
+11. **Interaja com o chatbot**:
+    - Digite suas perguntas sobre a REN 1000/2021 na caixa de chat
+    - O chatbot responderá com base no documento oficial da ANEEL
+    - Use perguntas como:
+      - "O que é consumidor livre?"
+      - "Quais são as modalidades tarifárias?"
+      - "Como funciona o sistema de compensação de energia?"
+
+> ❗ **Lembre-se** de aguardar alguns segundos após enviar sua pergunta para o chatbot processar e responder.
+
+## 🔧 Funcionalidades
+
+- ✅ **Interface web intuitiva** com Streamlit
+- ✅ **Processamento inteligente de PDF** com extração hierárquica
+- ✅ **Busca semântica** utilizando ChromaDB
+- ✅ **Respostas contextualizadas** com Google Gemini AI
+- ✅ **Configuração flexível** de API key (.env ou interface)
+- ✅ **Cache inteligente** do banco de dados vetorial
+- ✅ **Fontes das respostas** com localização hierárquica
 
 ## 🐛 Solução de Problemas
 
 ### Erro de API Key
-- Verifique se a chave está correta no arquivo `.env` ou na interface
+- Verifique se a chave está correta no arquivo `.env`
 - Certifique-se de que a chave tem permissões para o Gemini AI
+- Teste a chave diretamente no Google AI Studio
 
 ### Erro de Banco de Dados
 - Delete a pasta `chroma_db_data/` e o arquivo `db_initialized.flag`
 - Reinicie a aplicação para recriar o banco
 
-### Dependências
-- Use um ambiente virtual isolado
-- Verifique se todas as dependências do `requirements.txt` foram instaladas
+### Erro de Dependências
+- Certifique-se de estar no ambiente Anaconda correto: `conda activate aneel-chatbot`
+- Atualize o pip: `python -m pip install --upgrade pip`
+- Reinstale as dependências: `pip install -r requirements.txt --force-reinstall`
+- Se usar Windows, certifique-se de estar usando o **Anaconda Powershell Prompt**
 
-## 📝 Licença
+### Erro de Ambiente Anaconda
+- Liste os ambientes disponíveis: `conda env list`
+- Se o ambiente não existir, recrie-o: `conda create --name aneel-chatbot python=3.9`
+- Para remover um ambiente corrompido: `conda env remove --name aneel-chatbot`
 
-Este projeto é desenvolvido para fins acadêmicos como parte do Projeto Final de Curso da Especialização em NLP da AKCIT.
+### Erro de Memória
+- Reduza o tamanho dos chunks em `text_processor.py`
+- Feche outros aplicativos que consomem muita memória
+- No Anaconda, você pode monitorar o uso de memória com: `conda list`
 
-## 👥 Contribuição
+## 📝 Tecnologias Utilizadas
 
-Para contribuir com o projeto:
-1. Faça um fork do repositório
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Abra um Pull Request
+- **Python 3.8+**: Linguagem principal
+- **Streamlit**: Interface web
+- **Google Gemini AI**: Modelo de linguagem
+- **ChromaDB**: Banco de dados vetorial
+- **LangChain**: Processamento de texto
+- **PyMuPDF**: Processamento de PDF
+
+> 🎓 *Este projeto demonstra a aplicação prática de técnicas de RAG e processamento de linguagem natural para criar soluções inteligentes no domínio regulatório brasileiro.*
+

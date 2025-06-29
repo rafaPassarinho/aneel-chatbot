@@ -150,6 +150,6 @@ ehthumbs.db
 Desktop.ini
 
 # ChromaDB data directory
-chroma_db_data/
+# chroma_db_data/
 # Flag file
-db_initialized.flag
+# db_initialized.flag

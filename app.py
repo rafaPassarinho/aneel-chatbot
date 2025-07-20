@@ -1,5 +1,7 @@
 import streamlit as st
 import os
+os.environ['STREAMLIT_SERVER_FILE_WATCHER_TYPE'] = 'none'
+
 import chromadb
 
 from text_processor import parse_aneel_pdf, download_pdf_if_not_exists, PDF_URL, LOCAL_PDF_PATH
@@ -95,6 +97,40 @@ else:
     st.sidebar.warning("Por favor, insira sua chave de API Gemini para continuar.")
     st.stop()
 
+# Add reranker configuration in sidebar
+def add_reranker_settings():
+    """Add reranker configuration to sidebar."""
+    st.sidebar.subheader("⚙️ Configurações de Busca")
+    
+    use_reranking = st.sidebar.checkbox(
+        "Usar Reranking", 
+        value=True, 
+        help="Aplica reranking com cross-encoder para melhorar a relevância dos resultados"
+    )
+    
+    num_results = st.sidebar.slider(
+        "Número de resultados", 
+        min_value=1, 
+        max_value=10, 
+        value=3,
+        help="Número de documentos a serem retornados para o chatbot"
+    )
+    
+    if use_reranking:
+        initial_results = st.sidebar.slider(
+            "Resultados iniciais (antes do reranking)", 
+            min_value=5, 
+            max_value=20, 
+            value=10,
+            help="Número de documentos recuperados antes do reranking"
+        )
+    else:
+        initial_results = num_results
+    
+    return use_reranking, num_results, initial_results
+
+use_reranking, num_results, initial_results = add_reranker_settings()
+
 # Verifica se o banco de dados vetorial está pronto antes de permitir consultas
 ensure_db_is_ready()
 
@@ -121,13 +157,27 @@ if prompt := st.chat_input("Qual a sua pergunta sobre a REN 1000/2021 da ANEEL?"
         message_placeholder = st.empty()
         message_placeholder.markdown("**Pensando...** 🧠")
 
-        # 1. Consulta o banco de dados vetorial
-        retrieved_chunks = query_vector_db(prompt, n_results=3)
+        # 1. Consulta o banco de dados vetorial com reranking
+        if use_reranking:
+            message_placeholder.markdown("**Buscando documentos relevantes...** 📚")
+            retrieved_chunks = query_vector_db(
+                prompt, 
+                n_results=initial_results,
+                use_reranking=True,
+                rerank_top_k=num_results
+            )
+        else:
+            retrieved_chunks = query_vector_db(
+                prompt, 
+                n_results=num_results,
+                use_reranking=False
+            )
         
         if not retrieved_chunks:
             full_response = "Desculpe, não consegui encontrar informações relevantes nos documentos consultados para responder à sua pergunta."
         else:
             # 2. Gera a resposta usando o modelo Gemini
+            message_placeholder.markdown("**Gerando resposta...** 🤖")
             full_response = generate_response_with_gemini(prompt, retrieved_chunks)
 
         # Atualiza a mensagem com a resposta final
@@ -142,6 +192,8 @@ if prompt := st.chat_input("Qual a sua pergunta sobre a REN 1000/2021 da ANEEL?"
                     st.caption(f"**Fonte {i+1}:**")
                     if metadata.get('full_hierarchical_path'):
                         st.caption(f"📍 **Localização:** {metadata['full_hierarchical_path']}")
+                    if use_reranking:
+                        st.caption("🏆 **Reranked result**")
                     st.caption(f"📄 **Conteúdo:** {doc[:200]}...")
                     st.divider()
             else:
